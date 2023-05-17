@@ -1,0 +1,342 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"    content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="">
+	<meta name="author"      content="Sergey Pozhilov (GetTemplate.com)">
+	
+	<title>Home</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="shortcut icon" href="{% static 'assets/images/gt_favicon.png' %}">
+	
+
+	<!-- <link rel="stylesheet" href="{% static 'assets/style.css' %}"> -->
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"/>
+
+
+	<link rel="stylesheet" media="screen" href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,700">
+	<link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+	<link rel="stylesheet" href="{% static 'assets/css/font-awesome.min.css' %}">
+
+	<!-- Custom styles for our template -->
+	<link rel="stylesheet" href="{% static 'assets/css/bootstrap-theme.css' %}" media="screen" >
+	<link rel="stylesheet" href="{% static 'assets/css/main.css' %}">
+
+	<script src="{% static  'jquery-2.1.4.min.js' %}"></script>
+	<script type="text/javascript">
+		$(document).ready(function (e) {
+			
+		  
+		  $('#upload').on('click', function () {
+				var form_data = new FormData();
+		
+
+				var rval = Math.floor(1000 + Math.random() * 9000);
+				varimgnm=rval+".jpg"
+				alert(varimgnm)
+		   
+				var ins = document.getElementById('multiFiles').files.length;
+			
+				if(ins == 0) {
+					alert("Input fields cannot be null!!")
+					
+					return;
+				}
+			   
+				else{
+					for (var x = 0; x < ins; x++) {
+					form_data.append("files[]", document.getElementById('multiFiles').files[x]);
+				}
+				
+				form_data.append("varimgnm", varimgnm);
+			 
+				csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+				
+				//console.log(csrf_token);
+				form_data.append("csrfmiddlewaretoken", csrf_token);
+				
+				$.ajax({
+					url: "/upload_files/", // point to server-side URL
+					dataType: 'json', // what to expect back from server
+					cache: false,
+					contentType: false,
+					processData: false,
+					//data: {'data': form_data, 'csrfmiddlewaretoken': csrf_token},
+					data: form_data,
+					type: 'post',
+					success: function (response) { // display success response
+						// document.getElementById('result').innerHTML= response.msg;
+						
+						alert("Process completed!!!")
+						document.getElementById('imgid').src = 'static/assets/images/'+varimgnm;
+						document.getElementById('prvid').src = 'static/assets/images/'+varimgnm;
+						document.getElementById('iddiv').style.display="block"
+					
+
+
+					},
+					error: function (response) {
+						$('#msg').html(response.message); // display error response
+					}
+				});
+				}
+				// alert(sts)
+				
+			});
+		});
+	</script>
+
+<script>
+	var loadFile = function(event) {
+		var image = document.getElementById('output');
+		image.src=URL.createObjectURL(event.target.files[0]);
+	};
+</script>
+
+
+<style>
+    .button {
+      background-color: #4CAF50; /* Green */
+      border: none;
+      color: white;
+      padding: 10px 22px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+      margin: 4px 2px;
+      transition-duration: 0.4s;
+      cursor: pointer;
+    }
+    
+    .button1 {
+      background-color: white; 
+      color: black; 
+      border: 2px solid #4CAF50;
+    }
+    
+    .button1:hover {
+      background-color: #4CAF50;
+      color: white;
+    }
+    
+    .btn {
+  background-color: DodgerBlue;
+  border: none;
+  color: white;
+  padding: 12px 16px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Darker background on mouse-over */
+.btn:hover {
+  background-color: RoyalBlue;
+}
+    </style>
+</head>
+
+<body>
+	<!-- Fixed navbar -->
+	<div class="navbar navbar-inverse navbar-fixed-top headroom" >
+		<div class="container">
+			<div class="navbar-header">
+				<!-- Button for smallest screens -->
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"><span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+				<a class="navbar-brand" href="index.html"><h3>Deep learning Based Medical image enhancement system</h3></a>
+			</div>
+			
+			<!--/.nav-collapse -->
+		</div>
+	</div> 
+	<!-- /.navbar -->
+
+	<header id="head" class="secondary"></header>
+
+	<!-- container -->
+	<div class="container">
+
+
+		<div class="row">
+			
+			<!-- Article main content -->
+			<article class="col-xs-12 maincontent" style="min-height: 500px;">
+					<h1 class="page-title">Upload and enhance your image</h1>
+				<div style="width: 100%;">
+					<center>
+					<h3 style="color:rgba(15, 38, 114, 0.863);">Upload Medical image </h3>
+
+					<p><img id="output" src="static/assets/images/sample.jpg" width="200"/></p>
+					<fieldset name="Multiple Files Upload">
+						{% if msg %} {% autoescape off %} {{ msg }} {% endautoescape %} {% endif %}
+						<div id="msg"></div>
+						<p>
+							{% csrf_token %}
+							<input type="file" id="multiFiles" name="files[]" multiple="multiple" onchange="loadFile(event)"/>
+							<!-- <button id="upload">Upload</button> -->
+						</p>
+					</fieldset>
+					<button id="upload" type="submit" class="button button1">Enhance Now</button><br><br>
+
+					<div id="did" >
+					<h3 style="color: rgb(0, 0, 0);text-decoration: dotted;" >The result image will shown below</h3><br>
+
+					<img id="imgid" src="static/assets/images/sample1.jpg" width="150" height="150" alt="Image">
+				
+					
+					
+				</div>
+				<div id="iddiv" style="display:none;margin-top: 30px;">
+				<!-- <a href="{% url 'Image_editor' %}">
+				<button class="btn"><i class="fa fa-pencil"></i> Click here for more editing</button>
+
+</a> -->
+
+<!-- <div style="width: 50%;"> -->
+
+<div class="container disable">
+	<h2>Advanced editing</h2>
+	<div class="wrapper">
+		<div class="editor-panel">
+			<div class="filter">
+				<label class="title">Filters</label>
+				<div class="options">
+					<button id="brightness" class="active">Brightness</button>
+					<!-- <button id="saturation">Saturation</button> -->
+					<button id="inversion">Inversion</button>
+					<!-- <button id="grayscale">Grayscale</button> -->
+				</div>
+				<div class="slider">
+					<div class="filter-info">
+						<p class="name">Brighteness</p>
+						<p class="value">100%</p>
+					</div>
+					<input type="range" value="100" min="0" max="200">
+				</div>
+			</div>
+			<div class="rotate">
+				<label class="title">Rotate & Flip</label>
+				<div class="options">
+					<button id="left"><i class="fa-solid fa-rotate-left"></i></button>
+					<button id="right"><i class="fa-solid fa-rotate-right"></i></button>
+					<button id="horizontal"><i class='bx bx-reflect-vertical'></i></button>
+					<button id="vertical"><i class='bx bx-reflect-horizontal' ></i></button>
+				</div>
+			</div>
+		</div>
+		<div class="preview-img" style="margin-top: 10px;">
+			<img src="{% static 'assets/images/1.jpg' %}" id="prvid" alt="preview-img">
+		</div>
+	</div>
+	<div class="controls" style="margin-top: 20px;">
+		<button class="reset-filter">Reset Filters</button>
+		<div class="row" style="margin-top: 20px;">
+			<!-- <input type="file" class="file-input" accept="image/*" hidden> -->
+			<!-- <button class="choose-img">Choose Image</button> -->
+			<button class="save-img">Save Image</button>
+		</div>
+	</div>
+</div>
+
+<!-- </div> -->
+			</div>
+		
+				</center>
+				  </div>
+		
+		
+				  
+				
+			</article>
+			<!-- /Article -->
+
+		</div>
+	</div>	<!-- /container -->
+	
+
+	<footer id="footer" class="top-space">
+
+		<div class="footer1">
+			<div class="container">
+				<div class="row">
+					
+					<div class="col-md-3 widget">
+						<h3 class="widget-title">Contact</h3>
+						<div class="widget-body">
+							<p>+234 23 9873237<br>
+								<a href="mailto:#">some.email@somewhere.com</a><br>
+								<br>
+								234 Hidden Pond Road, Ashland City, TN 37015
+							</p>	
+						</div>
+					</div>
+
+					<div class="col-md-3 widget">
+						<h3 class="widget-title">Follow me</h3>
+						<div class="widget-body">
+							<p class="follow-me-icons clearfix">
+								<a href=""><i class="fa fa-twitter fa-2"></i></a>
+								<a href=""><i class="fa fa-dribbble fa-2"></i></a>
+								<a href=""><i class="fa fa-github fa-2"></i></a>
+								<a href=""><i class="fa fa-facebook fa-2"></i></a>
+							</p>	
+						</div>
+					</div>
+
+					<div class="col-md-6 widget">
+						<h3 class="widget-title">Text widget</h3>
+						<div class="widget-body">
+							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Excepturi, dolores, quibusdam architecto voluptatem amet fugiat nesciunt placeat provident cumque accusamus itaque voluptate modi quidem dolore optio velit hic iusto vero praesentium repellat commodi ad id expedita cupiditate repellendus possimus unde?</p>
+							<p>Eius consequatur nihil quibusdam! Laborum, rerum, quis, inventore ipsa autem repellat provident assumenda labore soluta minima alias temporibus facere distinctio quas adipisci nam sunt explicabo officia tenetur at ea quos doloribus dolorum voluptate reprehenderit architecto sint libero illo et hic.</p>
+						</div>
+					</div>
+
+				</div> <!-- /row of widgets -->
+			</div>
+		</div>
+
+		<div class="footer2">
+			<div class="container">
+				<div class="row">
+					
+					<div class="col-md-6 widget">
+						<div class="widget-body">
+							<p class="simplenav">
+								<a href="#">Home</a> | 
+								<a href="about.html">About</a> |
+								<a href="sidebar-right.html">Sidebar</a> |
+								<a href="contact.html">Contact</a> |
+								<b><a href="signup.html">Sign up</a></b>
+							</p>
+						</div>
+					</div>
+
+					<div class="col-md-6 widget">
+						<div class="widget-body">
+							<p class="text-right">
+								Copyright &copy; 2014, Your name. Designed by <a href="http://gettemplate.com/" rel="designer">gettemplate</a> 
+							</p>
+						</div>
+					</div>
+
+				</div> <!-- /row of widgets -->
+			</div>
+		</div>
+	</footer>	
+		
+
+
+	<script src="{% static 'assets/script.js' %}"></script>
+
+	<!-- JavaScript libs are placed at the end of the document so the pages load faster -->
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+	<script src="{% static 'assets/js/headroom.min.js' %}"></script>
+	<script src="{% static 'assets/js/jQuery.headroom.min.js' %}"></script>
+	<script src="{% static 'assets/js/template.js' %}"></script>
+</body>
+</html>
